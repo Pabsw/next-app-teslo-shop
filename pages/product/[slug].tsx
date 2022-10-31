@@ -1,13 +1,24 @@
+import { PropsWithChildren, createContext } from 'react';
+import { NextPage, GetStaticPaths, GetStaticProps } from 'next'
 import { ShopLayout } from '../../components/layouts/ShopLayout';
-import { initialData } from '../../database/products';
 import { Grid, Box, Typography, Button, Chip } from '@mui/material';
 import { ProductSlideshow } from '../../components/products';
 import { ItemCounter } from '../../components/ui';
 import { SizeSelector } from '../../components/products/SizeSelector';
+import { IProduct } from '../../interfaces';
+import { dbProducts } from '../../database';
 
-const product = initialData.products[0];
 
-const ProductPage = () => {
+interface Props {
+  product: IProduct
+}
+
+
+const ProductPage:NextPage<PropsWithChildren<Props>> = ({product}) => {
+
+  /*const router = useRouter();
+  const {products: product, isLoading} = useProducts(`/products/${router.query.slug}`);*/
+
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
 
@@ -53,5 +64,67 @@ const ProductPage = () => {
     </ShopLayout>
   )
 }
+
+
+export const getStaticPaths: GetStaticPaths = async (ctx) => {
+
+  const product = await dbProducts.getAllProductSlugs();
+
+
+  return {
+    paths: product.map( ({slug}) => ({
+      params: {
+        slug
+      }
+    })),
+    fallback: 'blocking'
+  }
+}
+
+
+export const getStaticProps: GetStaticProps = async ({params}) => {
+
+  const {slug=''} = params as {slug: string};
+  const product = await dbProducts.getProductsBySlug(slug);
+
+  if(!product){
+    return{
+      redirect: {
+          destination: '/',
+          permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {
+        product
+    },
+    revalidate: 86400
+  }
+}
+
+/*export const getServerSideProps: GetServerSideProps = async ({params}) => {
+
+  const {slug} = params as {slug:string};
+  const product = await dbProducts.getProductsBySlug(slug);
+
+  if(!product){
+    return{
+      redirect: {
+          destination: '/',
+          permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {
+        product
+    }
+  }
+}*/
+
+
 
 export default ProductPage

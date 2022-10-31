@@ -23,12 +23,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 const getProducts = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
     
-    const {sex = 'all'} = req.query;
+    const {gender = 'all'} = req.query;
 
     let condition = {};
 
-    if( sex != 'all' && SHOP_CONSTANTS.validSex.includes(`${sex}`)){
-        condition = {sex};
+    if( gender != 'all' && SHOP_CONSTANTS.validGender.includes(`${gender}`)){
+        condition = {gender};
     }
     
     await db.connect();

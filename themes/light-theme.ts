@@ -12,7 +12,7 @@ export const lightTheme = createTheme({
       main: '#3A64D8'
     },
     info: {
-      main: '#fff'
+      main: '#000'
     }
   },
   components: {

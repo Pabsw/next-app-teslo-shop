@@ -1,7 +1,22 @@
-import { AppBar, Toolbar, Link, Typography, Box, Button, IconButton, Badge } from '@mui/material';
-import {SearchOutlined, ShoppingCartOutlined} from '@mui/icons-material'
+import { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { AppBar, Toolbar, Link, Typography, Box, Button, IconButton, Badge, Input, InputAdornment } from '@mui/material';
+import {ClearOutlined, SearchOutlined, ShoppingCartOutlined} from '@mui/icons-material'
+import { UiContext } from '../../context';
 
 export const Navbar = () => {
+
+    const { asPath, push } = useRouter();
+    const { toggleSideMenu } = useContext(UiContext);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isSearchVisible, setIsSearchVisible] = useState(false)
+
+    const onSearchTerm = () => {
+        if(searchTerm.trim().length === 0) return;
+        push(`/search/${searchTerm}`);
+    }
+
   return (
     <AppBar>
         <Toolbar>
@@ -12,25 +27,63 @@ export const Navbar = () => {
 
             <Box flex={1}/>
     
-            <Box sx={{display: {xs: 'none', sm: 'block'}}}>
+            <Box className='fadeIn' sx={{display: isSearchVisible ? 'none' : {xs: 'none', sm: 'block'}}}>
                 <Link href='/category/men'>
-                    <Button>Hombre</Button>
+                    <Button color={ asPath === '/category/men' ? 'secondary':'primary'}>Hombre</Button>
                 </Link>
                 <Link href='/category/women'>
-                    <Button>Mujer</Button>
+                    <Button color={ asPath === '/category/women' ? 'secondary':'primary'}>Mujer</Button>
                 </Link>
                 <Link href='/category/kid'>
-                    <Button>Niño</Button>
+                    <Button color={ asPath === '/category/kid' ? 'secondary':'primary'}>Niño</Button>
                 </Link>
             </Box>
 
             <Box flex={1}/>
 
-            <IconButton>
+            {
+                isSearchVisible
+                    ? (
+                        <Input
+                            sx={{display: {xs: 'none', sm: 'flex'}}}
+                            className='fadeIn'
+                            autoFocus
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyUp={(e) => e.key === 'Enter' ? onSearchTerm() : null}
+                            type='text'
+                            placeholder="Buscar..."
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setIsSearchVisible(false)}
+                                    >
+                                        <ClearOutlined />
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                        />
+                    )
+                    : (
+                        <IconButton 
+                            className='fadeIn' 
+                            onClick={() => setIsSearchVisible(true)}
+                            sx={{display: {xs: 'none', sm: 'flex'}}}    
+                        >
+                            <SearchOutlined/>
+                        </IconButton>
+                    )
+            }
+            
+
+            <IconButton
+                sx={{display: {xs: 'flex', sm: 'none'}}}
+                onClick={toggleSideMenu}
+            >
                 <SearchOutlined/>
             </IconButton>
 
-            <Link>
+            <Link href='/cart'>
                 <IconButton>
                     <Badge badgeContent={2} color="secondary">
                         <ShoppingCartOutlined />
@@ -38,7 +91,7 @@ export const Navbar = () => {
                 </IconButton>
             </Link>
 
-            <Button>
+            <Button onClick={toggleSideMenu}>
                 Menú
             </Button>
         </Toolbar>
