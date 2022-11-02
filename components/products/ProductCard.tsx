@@ -1,4 +1,4 @@
-import { Grid, Card, CardActionArea, CardMedia, Box, Typography } from '@mui/material';
+import { Grid, Card, CardActionArea, CardMedia, Box, Typography, Chip } from '@mui/material';
 
 import { IProduct } from '../../interfaces'
 import { FC, PropsWithChildren, useMemo, useState } from 'react';
@@ -22,13 +22,27 @@ export const ProductCard:FC<PropsWithChildren<Props>> = ({product}) => {
 
 
   return (
+
     <Grid item xs={6} sm={4}
         onMouseEnter={()=>setIsHovered(true)}
         onMouseLeave={()=>setIsHovered(false)}    
     >
         <Card>
+
             <Link href={`/product/${product.slug}`} passHref prefetch={false}>
+
                 <CardActionArea>
+
+                    {
+                        (product.inStock === 0 && (
+                            <Chip 
+                            color='primary'
+                            label='No hay disponibles'
+                            sx={{position: 'absolute', zIndex: 99, top: '10px', left: '10px'}}
+                        />
+                        ))
+                    }
+                    
                     <CardMedia 
                         component='img'
                         className='fadeIn'
@@ -36,8 +50,11 @@ export const ProductCard:FC<PropsWithChildren<Props>> = ({product}) => {
                         alt={product.title}
                         onLoad={ () => setIsImageLoaded(true)}
                     />
+
                 </CardActionArea>
+
             </Link>
+
         </Card>
 
         <Box sx={{mt: 1, display: isImageLoaded ? 'block' : 'none'}} className='fadeIn'>
