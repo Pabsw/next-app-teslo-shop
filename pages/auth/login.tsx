@@ -1,9 +1,10 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import { GetServerSideProps } from 'next'
+import { getProviders, getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { ErrorOutline } from '@mui/icons-material';
-import { Box, Grid, Typography, TextField, Button, Link, Chip } from '@mui/material';
+import { Box, Grid, Typography, TextField, Button, Link, Chip, Divider } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { tesloApi } from '../../api';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
 import { AuthContext } from '../../context';
@@ -16,25 +17,24 @@ type FormData = {
 const LoginPage = () => {
 
     const router = useRouter();
-    const { loginUser } = useContext(AuthContext);
-    
+        
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [showError, setShowError] = useState(false);
+
+    const [providers, setProviders] = useState<any>({});
+
+    useEffect(() => {
+      getProviders().then( prov => {
+        setProviders(prov);
+      })
+    }, [])
+    
 
     const onLoginUser = async({email,password}: FormData) => {
 
         setShowError(false);
 
-        const isValidLogin = await loginUser(email,password);
-
-        if(!isValidLogin){
-            setShowError(true);
-            setTimeout(() => setShowError(false), 3000);
-            return;
-        }
-
-        const destination = router.query.p?.toString() || '/';
-        router.replace(destination);
+        await signIn('credentials', {email, password});
     }
 
   return (
@@ -98,6 +98,28 @@ const LoginPage = () => {
                             ¿No tienes cuenta?
                         </Link>
                     </Grid>
+                    <Grid item xs={12} display="flex" flexDirection='column' justifyContent="end">
+                        <Divider sx={{width: '100%', mb:2}}/>
+                        {
+                            Object.values(providers).map( (provider: any) => {
+
+                                if( provider.id === 'credentials' ) return (<div key="credentials"></div>)
+
+                                return (
+                                    <Button
+                                        key={provider.id}
+                                        variant='outlined'
+                                        fullWidth
+                                        color='primary'
+                                        sx={{mb: 1}}
+                                        onClick={ () => signIn(provider.id)}
+                                    >
+                                        {provider.name}
+                                    </Button>
+                                )
+                            })
+                        }
+                    </Grid>
 
                 </Grid>
 
@@ -106,6 +128,29 @@ const LoginPage = () => {
         </form>
     </AuthLayout>
   )
+}
+
+
+export const getServerSideProps: GetServerSideProps = async ({req, query}) => {
+
+    const session = await getSession({req});
+
+    const { p = '/' } = query;
+
+    if(session){
+        return {
+            redirect: {
+                destination: p.toString(),
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            
+        }
+    }
 }
 
 export default LoginPage
