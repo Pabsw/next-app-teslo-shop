@@ -17,6 +17,7 @@ const LoginPage = () => {
 
     const router = useRouter();
     const { loginUser } = useContext(AuthContext);
+    
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [showError, setShowError] = useState(false);
 
@@ -32,10 +33,9 @@ const LoginPage = () => {
             return;
         }
 
-
-        router.replace('/');
+        const destination = router.query.p?.toString() || '/';
+        router.replace(destination);
     }
-
 
   return (
     <AuthLayout title={'Ingresar'}>
@@ -94,7 +94,7 @@ const LoginPage = () => {
                     </Grid>
 
                     <Grid item xs={12} display="flex" justifyContent="end">
-                        <Link href="/auth/register">
+                        <Link href={router.query.p ? `/auth/register?p=${router.asPath}` : 'auth/register'}>
                             ¿No tienes cuenta?
                         </Link>
                     </Grid>

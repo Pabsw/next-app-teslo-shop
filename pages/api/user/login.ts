@@ -9,9 +9,9 @@ type Data =
 | {
     token: string;
     user: {
-        email: string,
-        name: string,
-        role: string
+        email: string;
+        name: string;
+        role: string;
     }
 }
 

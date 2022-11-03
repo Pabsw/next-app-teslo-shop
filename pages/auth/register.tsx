@@ -30,12 +30,14 @@ const RegisterPage = () => {
         const {hasError, message} = await registerUser( name, email, password);
 
         if(hasError){
+            setShowError(true);
             setErrorMessage(message!);
             setTimeout(() => setShowError(false), 3000);
             return;
         }
         
-        router.replace('/');
+        const destination = router.query.p?.toString() || '/';
+        router.replace(destination);
     }
 
   return (
@@ -108,7 +110,7 @@ const RegisterPage = () => {
                     </Grid>
 
                     <Grid item xs={12} display="flex" justifyContent="end">
-                        <Link href="/auth/login">
+                        <Link href={router.query.p ? `/auth/login?p=${router.asPath}` : 'auth/login'}>
                             ¿Ya tienes cuenta?
                         </Link>
                     </Grid>

@@ -18,7 +18,7 @@ type Data =
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     
     switch (req.method) {
-        case 'POST':
+        case 'GET':
             return checkJWT(req,res)            
     
         default:
@@ -50,7 +50,7 @@ const checkJWT = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         return res.status(400).json({message: 'No existe usuario con ese id'})
     }
 
-    const { _id, name, role, email }= user;
+    const { _id, name, role, email } = user;
 
     return res.status(200).json({
         token: jwt.signToken(_id,email),
