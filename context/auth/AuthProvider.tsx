@@ -29,7 +29,7 @@ export const AuthProvider:FC = ({children}) => {
        if(status === 'authenticated'){
           dispatch({type: '[Auth] - Login', payload: data?.user as IUser})
        }
-     }, [ data, status ])
+     }, [ status, data ])
      
 
      /*useEffect(() => {

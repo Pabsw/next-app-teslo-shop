@@ -46,7 +46,7 @@ const AddressPage = () => {
             address2: '',
             zip: '',
             city: '',
-            country: '',
+            country: countries[0].code,
             phone: '',          
         }
     });
@@ -150,8 +150,8 @@ const AddressPage = () => {
                         <TextField
                             //select
                             variant='filled'
-                            fullWidth
                             label="País"
+                            fullWidth
                             //defaultValue={ Cookies.get('country') || countries[0].code}
                             { ...register('country', {
                                 required: 'Este campo es obligatorio'
@@ -199,7 +199,7 @@ const AddressPage = () => {
 
 
 
-export const getServerSideProps: GetServerSideProps = async ({req}) => {
+/*export const getServerSideProps: GetServerSideProps = async ({req}) => {
     const { token = ''} = req.cookies;
     let isValidToken = false;
 
@@ -224,6 +224,6 @@ export const getServerSideProps: GetServerSideProps = async ({req}) => {
             
         }
     }
-}
+}*/
 
 export default AddressPage

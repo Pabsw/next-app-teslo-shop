@@ -3,13 +3,15 @@ import { ItemCounter } from '../ui';
 import { FC, PropsWithChildren, useContext } from 'react';
 import { CartContext } from '../../context/cart/CartContext';
 import { ICartProduct } from '../../interfaces/cart';
+import { IOrderItem } from '../../interfaces';
 
 
 interface Props {
   editable?: boolean;
+  products?: IOrderItem[];
 }
 
-export const CartList:FC<PropsWithChildren<Props>> = ({editable = false}) => {
+export const CartList:FC<Props> = ({editable = false, products}) => {
 
   const { cart, updateCartQuantity, removeCartProduct } = useContext(CartContext);
 
@@ -18,10 +20,12 @@ export const CartList:FC<PropsWithChildren<Props>> = ({editable = false}) => {
     updateCartQuantity(product);
   }
 
+  const productsToShow = products ? products : cart;
+
   return (
     <>
         {
-            cart.map(product=> (
+            productsToShow.map(product=> (
                 <Grid container spacing={2} key={product.slug + product.size} sx={{mb:1}}>
 
                   <Grid item xs={3}>
@@ -48,12 +52,12 @@ export const CartList:FC<PropsWithChildren<Props>> = ({editable = false}) => {
                           ? (<ItemCounter 
                               currentValue={product.quantity} 
                               maxValue={10} 
-                              updatedQuantity={(value)=> onNewCartQuantityValue(product, value)}
+                              updatedQuantity={(value)=> onNewCartQuantityValue(product as ICartProduct, value)}
                                                
                             />
                           )
                           : (
-                              <Typography variant='h5'>{product.quantity}{product.quantity > 1 ? 'productos' : 'producto'}</Typography>
+                              <Typography variant='h5'>{product.quantity}{product.quantity > 1 ? ' productos' : ' producto'}</Typography>
                             )
                       }
 
@@ -66,7 +70,11 @@ export const CartList:FC<PropsWithChildren<Props>> = ({editable = false}) => {
                     <Typography variant='subtitle1'>{`$${product.price}`}</Typography>
                     {
                         editable && (
-                          <Button variant='text' color='secondary' onClick={()=>removeCartProduct(product)}>
+                          <Button 
+                              variant='text' 
+                              color='secondary' 
+                              onClick={ () => removeCartProduct(product as ICartProduct)}
+                          >
                             Borrar
                           </Button>
                         )
