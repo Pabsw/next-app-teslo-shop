@@ -2,7 +2,6 @@ import mongoose, { Schema, model, Model } from 'mongoose'
 import { IOrder } from '../interfaces/order';
 
 
-
 const orderSchema = new Schema({
     user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     orderItems: [{
@@ -33,6 +32,8 @@ const orderSchema = new Schema({
 
     isPaid: {type: Boolean, required: true, default: false},
     paidAt: {type: String},
+
+    transactionId: {type: String},
 
     
 }, {
